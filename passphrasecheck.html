@@ -1,0 +1,165 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Advanced Password Strength Checker</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            text-align: center;
+            margin: 50px;
+            background-color: #f4f4f9;
+            color: #333;
+        }
+        h2 {
+            color: #2c3e50;
+        }
+        .container {
+            display: inline-block;
+            padding: 20px;
+            background: white;
+            border-radius: 10px;
+            box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
+        }
+        input {
+            padding: 10px;
+            font-size: 16px;
+            width: 100%;
+            max-width: 300px;
+            border: 2px solid #ddd;
+            border-radius: 5px;
+            outline: none;
+            transition: border-color 0.3s;
+        }
+        input:focus {
+            border-color: #3498db;
+        }
+        .password-container {
+            position: relative;
+            display: inline-block;
+        }
+        .toggle-password {
+            position: absolute;
+            right: 10px;
+            top: 50%;
+            transform: translateY(-50%);
+            background: none;
+            border: none;
+            cursor: pointer;
+            color: #3498db;
+            font-size: 14px;
+        }
+        .strength-meter {
+            height: 10px;
+            width: 100%;
+            max-width: 300px;
+            background: #ddd;
+            border-radius: 5px;
+            margin: 10px auto;
+            overflow: hidden;
+        }
+        .strength-bar {
+            height: 100%;
+            width: 0;
+            background: red;
+            transition: width 0.3s, background 0.3s;
+        }
+        .strength-text {
+            font-weight: bold;
+            margin-top: 10px;
+            font-size: 14px;
+        }
+        .feedback {
+            margin-top: 10px;
+            font-size: 12px;
+            color: #666;
+        }
+    </style>
+</head>
+<body>
+
+    <div class="container">
+        <h2>🔒 Advanced Password Strength Checker</h2>
+        <div class="password-container">
+            <input type="password" id="password" placeholder="Enter password">
+            <button class="toggle-password" onclick="togglePasswordVisibility()">👁️</button>
+        </div>
+        <div class="strength-meter">
+            <div class="strength-bar" id="strengthBar"></div>
+        </div>
+        <p class="strength-text" id="strengthText">Strength: </p>
+        <p class="feedback" id="feedback"></p>
+    </div>
+
+    <script>
+        const passwordInput = document.getElementById("password");
+        const strengthBar = document.getElementById("strengthBar");
+        const strengthText = document.getElementById("strengthText");
+        const feedback = document.getElementById("feedback");
+
+        passwordInput.addEventListener("input", function() {
+            const password = this.value;
+            const strength = checkPasswordStrength(password);
+
+            updateStrengthMeter(strength);
+            updateFeedback(password);
+        });
+
+        function checkPasswordStrength(password) {
+            let strength = 0;
+
+            // Check length
+            if (password.length >= 8) strength += 1;
+            if (password.length >= 12) strength += 1;
+
+            // Check for uppercase letters
+            if (/[A-Z]/.test(password)) strength += 1;
+
+            // Check for numbers
+            if (/[0-9]/.test(password)) strength += 1;
+
+            // Check for special characters
+            if (/[^A-Za-z0-9]/.test(password)) strength += 1;
+
+            return strength;
+        }
+
+        function updateStrengthMeter(strength) {
+            const colors = ["red", "orange", "yellow", "lightgreen", "green"];
+            const width = (strength / 5) * 100;
+
+            strengthBar.style.width = `${width}%`;
+            strengthBar.style.backgroundColor = colors[strength - 1] || "red";
+
+            const strengthLabels = ["Very Weak", "Weak", "Medium", "Strong", "Very Strong"];
+            strengthText.textContent = `Strength: ${strengthLabels[strength - 1] || "Very Weak"}`;
+        }
+
+        function updateFeedback(password) {
+            let messages = [];
+
+            if (password.length < 8) {
+                messages.push("Password should be at least 8 characters long.");
+            }
+            if (!/[A-Z]/.test(password)) {
+                messages.push("Add at least one uppercase letter.");
+            }
+            if (!/[0-9]/.test(password)) {
+                messages.push("Add at least one number.");
+            }
+            if (!/[^A-Za-z0-9]/.test(password)) {
+                messages.push("Add at least one special character.");
+            }
+
+            feedback.textContent = messages.join(" ");
+        }
+
+        function togglePasswordVisibility() {
+            const type = passwordInput.type === "password" ? "text" : "password";
+            passwordInput.type = type;
+        }
+    </script>
+
+</body>
+</html>
